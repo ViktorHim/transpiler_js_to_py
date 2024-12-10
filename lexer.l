@@ -8,15 +8,10 @@ extern FILE *tokens_file;
 
 %}
 
-%%
-"let"               {
-                        fprintf(tokens_file, "LET\n");
-                        return LET;
-                    }
-
-"const"             {
-                        fprintf(tokens_file, "CONST\n");
-                        return CONST;
+%%  
+"let"|"var"|"const" {
+                        fprintf(tokens_file, "%s\n", yytext);
+                        return VARIABLE_DECLARATION_KEYWORD;
                     }
 
 "if"                {
@@ -190,14 +185,14 @@ extern FILE *tokens_file;
 
 [0-9]+              {
                         fprintf(tokens_file, "INT NUMBER: %s\n", yytext);
-                        yylval.number = atoi(yytext);
-                        return NUMBER; 
+                        yylval.intValue = atoi(yytext);
+                        return INT_NUMBER; 
                     }
 
 [0-9]+\.[0-9]+      {
                         fprintf(tokens_file, "INT NUMBER: %s\n", yytext);
-                        yylval.number = atof(yytext);
-                        return NUMBER;
+                        yylval.doubleValue = atof(yytext);
+                        return DOUBLE_NUMBER;
                     }
 
 [a-zA-Z_][a-zA-Z0-9_]* {
@@ -212,7 +207,7 @@ extern FILE *tokens_file;
                         return STRING_LITERAL; 
                     }
 
-[\n\t\r]+           {
+[\n\t\r ]+           {
                         // Skip whitespace
                     }
 

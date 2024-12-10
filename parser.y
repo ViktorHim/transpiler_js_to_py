@@ -7,33 +7,32 @@ extern int yylex();
 extern void yyerror(const char *s);
 
 extern FILE *yyin;
-FILE *output_file;
+extern FILE *yyout;
 FILE *tokens_file;
 
 %}
 
+
 %union {
-    double number;
-    char *str;
-    char *identifier;
+    int intValue;
+    double doubleValue;
+    char str[100];
+    char identifier[100];
 }
 
-%token LET
-%token CONST
-%token IF
-%token ELSE
-%token FOR
-%token WHILE
-%token DO
+%token VARIABLE_DECLARATION_KEYWORD
+
+%token IF ELSE FOR WHILE DO
+
 %token LPAREN
 %token RPAREN
 %token LBRACE
 %token RBRACE
 %token LBRACKET
 %token RBRACKET
-%token SEMICOLON
-%token DOT
-%token COMMA
+
+%token SEMICOLON DOT COMMA
+
 %token INCREMENT
 %token DECREMENT
 %token PLUS
@@ -41,11 +40,13 @@ FILE *tokens_file;
 %token MULTIPLY
 %token DIVIDE
 %token MODULO
+
 %token ASSIGN
 %token PLUS_ASSIGN
 %token MINUS_ASSIGN
 %token MULTIPLY_ASSIGN
 %token DIVIDE_ASSIGN
+
 %token GREATER
 %token LESS
 %token GREATER_EQUAL
@@ -57,12 +58,43 @@ FILE *tokens_file;
 
 %token <identifier> IDENTIFIER
 %token <str> STRING_LITERAL
-%token <number> NUMBER
+%token <intValue> INT_NUMBER
+%token <doubleValue> DOUBLE_NUMBER
+
+%type <str> statement expression variable_declaration_statement 
 
 %start program
 
 %%
 program:
+    statements
+    ;
+
+statements:
+    statement
+    | statements statement
+    ;
+
+statement:
+    variable_declaration_statement
+    ;
+
+variable_declaration_statement:
+    VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression SEMICOLON { 
+        sprintf($$, "%s = %s\n", $2, $4);
+        fprintf(yyout, "%s = %s\n", $2, $4);
+    }
+    | VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression {
+        sprintf($$, "%s = %s\n", $2, $4);
+        fprintf(yyout, "%s = %s\n", $2, $4);
+    }
+    ;
+
+expression:
+    IDENTIFIER { sprintf($$, "%s", $1); }
+    | INT_NUMBER { sprintf($$, "%d", $1); }
+    | DOUBLE_NUMBER { sprintf($$, "%lf", $1); }
+    ;
 
 %%
 
@@ -80,8 +112,8 @@ int main(int argc, char **argv) {
     }
 
     // Открытие выходного файла для Python
-    output_file = fopen(argv[2], "w");
-    if (!output_file) {
+    yyout = fopen(argv[2], "w");
+    if (!yyout) {
         perror("Failed to open output file");
         fclose(yyin);
         return 1;
@@ -92,7 +124,7 @@ int main(int argc, char **argv) {
     if (!tokens_file) {
         perror("Failed to open tokens file");
         fclose(yyin);
-        fclose(output_file);
+        fclose(yyout);
         return 1;
     }
 
@@ -101,7 +133,7 @@ int main(int argc, char **argv) {
 
     // Закрытие файлов
     fclose(yyin);
-    fclose(output_file);
+    fclose(yyout);
     fclose(tokens_file);
 
     return 0;

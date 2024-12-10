@@ -77,7 +77,7 @@ extern int yylex();
 extern void yyerror(const char *s);
 
 extern FILE *yyin;
-FILE *output_file;
+extern FILE *yyout;
 FILE *tokens_file;
 
 
@@ -112,47 +112,51 @@ enum yysymbol_kind_t
   YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
   YYSYMBOL_YYerror = 1,                    /* error  */
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
-  YYSYMBOL_LET = 3,                        /* LET  */
-  YYSYMBOL_CONST = 4,                      /* CONST  */
-  YYSYMBOL_IF = 5,                         /* IF  */
-  YYSYMBOL_ELSE = 6,                       /* ELSE  */
-  YYSYMBOL_FOR = 7,                        /* FOR  */
-  YYSYMBOL_WHILE = 8,                      /* WHILE  */
-  YYSYMBOL_DO = 9,                         /* DO  */
-  YYSYMBOL_LPAREN = 10,                    /* LPAREN  */
-  YYSYMBOL_RPAREN = 11,                    /* RPAREN  */
-  YYSYMBOL_LBRACE = 12,                    /* LBRACE  */
-  YYSYMBOL_RBRACE = 13,                    /* RBRACE  */
-  YYSYMBOL_LBRACKET = 14,                  /* LBRACKET  */
-  YYSYMBOL_RBRACKET = 15,                  /* RBRACKET  */
-  YYSYMBOL_SEMICOLON = 16,                 /* SEMICOLON  */
-  YYSYMBOL_DOT = 17,                       /* DOT  */
-  YYSYMBOL_COMMA = 18,                     /* COMMA  */
-  YYSYMBOL_INCREMENT = 19,                 /* INCREMENT  */
-  YYSYMBOL_DECREMENT = 20,                 /* DECREMENT  */
-  YYSYMBOL_PLUS = 21,                      /* PLUS  */
-  YYSYMBOL_MINUS = 22,                     /* MINUS  */
-  YYSYMBOL_MULTIPLY = 23,                  /* MULTIPLY  */
-  YYSYMBOL_DIVIDE = 24,                    /* DIVIDE  */
-  YYSYMBOL_MODULO = 25,                    /* MODULO  */
-  YYSYMBOL_ASSIGN = 26,                    /* ASSIGN  */
-  YYSYMBOL_PLUS_ASSIGN = 27,               /* PLUS_ASSIGN  */
-  YYSYMBOL_MINUS_ASSIGN = 28,              /* MINUS_ASSIGN  */
-  YYSYMBOL_MULTIPLY_ASSIGN = 29,           /* MULTIPLY_ASSIGN  */
-  YYSYMBOL_DIVIDE_ASSIGN = 30,             /* DIVIDE_ASSIGN  */
-  YYSYMBOL_GREATER = 31,                   /* GREATER  */
-  YYSYMBOL_LESS = 32,                      /* LESS  */
-  YYSYMBOL_GREATER_EQUAL = 33,             /* GREATER_EQUAL  */
-  YYSYMBOL_LESS_EQUAL = 34,                /* LESS_EQUAL  */
-  YYSYMBOL_EQUAL = 35,                     /* EQUAL  */
-  YYSYMBOL_STRICT_EQUAL = 36,              /* STRICT_EQUAL  */
-  YYSYMBOL_NOT_EQUAL = 37,                 /* NOT_EQUAL  */
-  YYSYMBOL_STRICT_NOT_EQUAL = 38,          /* STRICT_NOT_EQUAL  */
-  YYSYMBOL_IDENTIFIER = 39,                /* IDENTIFIER  */
-  YYSYMBOL_STRING_LITERAL = 40,            /* STRING_LITERAL  */
-  YYSYMBOL_NUMBER = 41,                    /* NUMBER  */
+  YYSYMBOL_VARIABLE_DECLARATION_KEYWORD = 3, /* VARIABLE_DECLARATION_KEYWORD  */
+  YYSYMBOL_IF = 4,                         /* IF  */
+  YYSYMBOL_ELSE = 5,                       /* ELSE  */
+  YYSYMBOL_FOR = 6,                        /* FOR  */
+  YYSYMBOL_WHILE = 7,                      /* WHILE  */
+  YYSYMBOL_DO = 8,                         /* DO  */
+  YYSYMBOL_LPAREN = 9,                     /* LPAREN  */
+  YYSYMBOL_RPAREN = 10,                    /* RPAREN  */
+  YYSYMBOL_LBRACE = 11,                    /* LBRACE  */
+  YYSYMBOL_RBRACE = 12,                    /* RBRACE  */
+  YYSYMBOL_LBRACKET = 13,                  /* LBRACKET  */
+  YYSYMBOL_RBRACKET = 14,                  /* RBRACKET  */
+  YYSYMBOL_SEMICOLON = 15,                 /* SEMICOLON  */
+  YYSYMBOL_DOT = 16,                       /* DOT  */
+  YYSYMBOL_COMMA = 17,                     /* COMMA  */
+  YYSYMBOL_INCREMENT = 18,                 /* INCREMENT  */
+  YYSYMBOL_DECREMENT = 19,                 /* DECREMENT  */
+  YYSYMBOL_PLUS = 20,                      /* PLUS  */
+  YYSYMBOL_MINUS = 21,                     /* MINUS  */
+  YYSYMBOL_MULTIPLY = 22,                  /* MULTIPLY  */
+  YYSYMBOL_DIVIDE = 23,                    /* DIVIDE  */
+  YYSYMBOL_MODULO = 24,                    /* MODULO  */
+  YYSYMBOL_ASSIGN = 25,                    /* ASSIGN  */
+  YYSYMBOL_PLUS_ASSIGN = 26,               /* PLUS_ASSIGN  */
+  YYSYMBOL_MINUS_ASSIGN = 27,              /* MINUS_ASSIGN  */
+  YYSYMBOL_MULTIPLY_ASSIGN = 28,           /* MULTIPLY_ASSIGN  */
+  YYSYMBOL_DIVIDE_ASSIGN = 29,             /* DIVIDE_ASSIGN  */
+  YYSYMBOL_GREATER = 30,                   /* GREATER  */
+  YYSYMBOL_LESS = 31,                      /* LESS  */
+  YYSYMBOL_GREATER_EQUAL = 32,             /* GREATER_EQUAL  */
+  YYSYMBOL_LESS_EQUAL = 33,                /* LESS_EQUAL  */
+  YYSYMBOL_EQUAL = 34,                     /* EQUAL  */
+  YYSYMBOL_STRICT_EQUAL = 35,              /* STRICT_EQUAL  */
+  YYSYMBOL_NOT_EQUAL = 36,                 /* NOT_EQUAL  */
+  YYSYMBOL_STRICT_NOT_EQUAL = 37,          /* STRICT_NOT_EQUAL  */
+  YYSYMBOL_IDENTIFIER = 38,                /* IDENTIFIER  */
+  YYSYMBOL_STRING_LITERAL = 39,            /* STRING_LITERAL  */
+  YYSYMBOL_INT_NUMBER = 40,                /* INT_NUMBER  */
+  YYSYMBOL_DOUBLE_NUMBER = 41,             /* DOUBLE_NUMBER  */
   YYSYMBOL_YYACCEPT = 42,                  /* $accept  */
-  YYSYMBOL_program = 43                    /* program  */
+  YYSYMBOL_program = 43,                   /* program  */
+  YYSYMBOL_statements = 44,                /* statements  */
+  YYSYMBOL_statement = 45,                 /* statement  */
+  YYSYMBOL_variable_declaration = 46,      /* variable_declaration  */
+  YYSYMBOL_expression = 47                 /* expression  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -478,18 +482,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  2
+#define YYFINAL  7
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   0
+#define YYLAST   9
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  42
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  2
+#define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  2
+#define YYNRULES  10
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  3
+#define YYNSTATES  15
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   296
@@ -542,7 +546,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    65,    65
+       0,    70,    70,    74,    75,    79,    83,    87,    94,    95,
+      96
 };
 #endif
 
@@ -558,14 +563,16 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "\"end of file\"", "error", "\"invalid token\"", "LET", "CONST", "IF",
-  "ELSE", "FOR", "WHILE", "DO", "LPAREN", "RPAREN", "LBRACE", "RBRACE",
-  "LBRACKET", "RBRACKET", "SEMICOLON", "DOT", "COMMA", "INCREMENT",
-  "DECREMENT", "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "MODULO", "ASSIGN",
-  "PLUS_ASSIGN", "MINUS_ASSIGN", "MULTIPLY_ASSIGN", "DIVIDE_ASSIGN",
-  "GREATER", "LESS", "GREATER_EQUAL", "LESS_EQUAL", "EQUAL",
-  "STRICT_EQUAL", "NOT_EQUAL", "STRICT_NOT_EQUAL", "IDENTIFIER",
-  "STRING_LITERAL", "NUMBER", "$accept", "program", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"",
+  "VARIABLE_DECLARATION_KEYWORD", "IF", "ELSE", "FOR", "WHILE", "DO",
+  "LPAREN", "RPAREN", "LBRACE", "RBRACE", "LBRACKET", "RBRACKET",
+  "SEMICOLON", "DOT", "COMMA", "INCREMENT", "DECREMENT", "PLUS", "MINUS",
+  "MULTIPLY", "DIVIDE", "MODULO", "ASSIGN", "PLUS_ASSIGN", "MINUS_ASSIGN",
+  "MULTIPLY_ASSIGN", "DIVIDE_ASSIGN", "GREATER", "LESS", "GREATER_EQUAL",
+  "LESS_EQUAL", "EQUAL", "STRICT_EQUAL", "NOT_EQUAL", "STRICT_NOT_EQUAL",
+  "IDENTIFIER", "STRING_LITERAL", "INT_NUMBER", "DOUBLE_NUMBER", "$accept",
+  "program", "statements", "statement", "variable_declaration",
+  "expression", YY_NULLPTR
 };
 
 static const char *
@@ -575,7 +582,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-1)
+#define YYPACT_NINF (-39)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -589,7 +596,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -1,     0,    -1
+      -2,   -34,     5,    -2,   -39,   -39,   -19,   -39,   -39,   -38,
+     -39,   -39,   -39,    -8,   -39
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -597,19 +605,20 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1
+       0,     0,     0,     2,     3,     5,     0,     1,     4,     0,
+       8,     9,    10,     7,     6
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -1,    -1
+     -39,   -39,   -39,     6,   -39,   -39
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1
+       0,     2,     3,     4,     5,    13
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -617,31 +626,34 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       2
+      10,     1,    11,    12,     6,     7,     9,    14,     0,     8
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0
+      38,     3,    40,    41,    38,     0,    25,    15,    -1,     3
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    43,     0
+       0,     3,    43,    44,    45,    46,    38,     0,    45,    25,
+      38,    40,    41,    47,    15
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    42,    43
+       0,    42,    43,    44,    44,    45,    46,    46,    47,    47,
+      47
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0
+       0,     2,     1,     1,     2,     1,     5,     4,     1,     1,
+       1
 };
 
 
@@ -1104,8 +1116,44 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
+  case 6: /* variable_declaration: VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression SEMICOLON  */
+#line 83 "parser.y"
+                                                                        { 
+        sprintf((yyval.str), "%s = %s\n", (yyvsp[-3].identifier), (yyvsp[-1].str));
+        fprintf(yyout, "%s = %s\n", (yyvsp[-3].identifier), (yyvsp[-1].str));
+    }
+#line 1126 "parser.tab.c"
+    break;
 
-#line 1109 "parser.tab.c"
+  case 7: /* variable_declaration: VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression  */
+#line 87 "parser.y"
+                                                                {
+        sprintf((yyval.str), "%s = %s\n", (yyvsp[-2].identifier), (yyvsp[0].str));
+        fprintf(yyout, "%s = %s\n", (yyvsp[-2].identifier), (yyvsp[0].str));
+    }
+#line 1135 "parser.tab.c"
+    break;
+
+  case 8: /* expression: IDENTIFIER  */
+#line 94 "parser.y"
+               { sprintf((yyval.str), "%s", (yyvsp[0].identifier)); }
+#line 1141 "parser.tab.c"
+    break;
+
+  case 9: /* expression: INT_NUMBER  */
+#line 95 "parser.y"
+                 { sprintf((yyval.str), "%d", (yyvsp[0].intValue)); }
+#line 1147 "parser.tab.c"
+    break;
+
+  case 10: /* expression: DOUBLE_NUMBER  */
+#line 96 "parser.y"
+                    { sprintf((yyval.str), "%lf", (yyvsp[0].doubleValue)); }
+#line 1153 "parser.tab.c"
+    break;
+
+
+#line 1157 "parser.tab.c"
 
       default: break;
     }
@@ -1298,7 +1346,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 67 "parser.y"
+#line 99 "parser.y"
 
 
 int main(int argc, char **argv) {
@@ -1315,8 +1363,8 @@ int main(int argc, char **argv) {
     }
 
     // Открытие выходного файла для Python
-    output_file = fopen(argv[2], "w");
-    if (!output_file) {
+    yyout = fopen(argv[2], "w");
+    if (!yyout) {
         perror("Failed to open output file");
         fclose(yyin);
         return 1;
@@ -1327,7 +1375,7 @@ int main(int argc, char **argv) {
     if (!tokens_file) {
         perror("Failed to open tokens file");
         fclose(yyin);
-        fclose(output_file);
+        fclose(yyout);
         return 1;
     }
 
@@ -1336,7 +1384,7 @@ int main(int argc, char **argv) {
 
     // Закрытие файлов
     fclose(yyin);
-    fclose(output_file);
+    fclose(yyout);
     fclose(tokens_file);
 
     return 0;

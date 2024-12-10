@@ -54,45 +54,45 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    LET = 258,                     /* LET  */
-    CONST = 259,                   /* CONST  */
-    IF = 260,                      /* IF  */
-    ELSE = 261,                    /* ELSE  */
-    FOR = 262,                     /* FOR  */
-    WHILE = 263,                   /* WHILE  */
-    DO = 264,                      /* DO  */
-    LPAREN = 265,                  /* LPAREN  */
-    RPAREN = 266,                  /* RPAREN  */
-    LBRACE = 267,                  /* LBRACE  */
-    RBRACE = 268,                  /* RBRACE  */
-    LBRACKET = 269,                /* LBRACKET  */
-    RBRACKET = 270,                /* RBRACKET  */
-    SEMICOLON = 271,               /* SEMICOLON  */
-    DOT = 272,                     /* DOT  */
-    COMMA = 273,                   /* COMMA  */
-    INCREMENT = 274,               /* INCREMENT  */
-    DECREMENT = 275,               /* DECREMENT  */
-    PLUS = 276,                    /* PLUS  */
-    MINUS = 277,                   /* MINUS  */
-    MULTIPLY = 278,                /* MULTIPLY  */
-    DIVIDE = 279,                  /* DIVIDE  */
-    MODULO = 280,                  /* MODULO  */
-    ASSIGN = 281,                  /* ASSIGN  */
-    PLUS_ASSIGN = 282,             /* PLUS_ASSIGN  */
-    MINUS_ASSIGN = 283,            /* MINUS_ASSIGN  */
-    MULTIPLY_ASSIGN = 284,         /* MULTIPLY_ASSIGN  */
-    DIVIDE_ASSIGN = 285,           /* DIVIDE_ASSIGN  */
-    GREATER = 286,                 /* GREATER  */
-    LESS = 287,                    /* LESS  */
-    GREATER_EQUAL = 288,           /* GREATER_EQUAL  */
-    LESS_EQUAL = 289,              /* LESS_EQUAL  */
-    EQUAL = 290,                   /* EQUAL  */
-    STRICT_EQUAL = 291,            /* STRICT_EQUAL  */
-    NOT_EQUAL = 292,               /* NOT_EQUAL  */
-    STRICT_NOT_EQUAL = 293,        /* STRICT_NOT_EQUAL  */
-    IDENTIFIER = 294,              /* IDENTIFIER  */
-    STRING_LITERAL = 295,          /* STRING_LITERAL  */
-    NUMBER = 296                   /* NUMBER  */
+    VARIABLE_DECLARATION_KEYWORD = 258, /* VARIABLE_DECLARATION_KEYWORD  */
+    IF = 259,                      /* IF  */
+    ELSE = 260,                    /* ELSE  */
+    FOR = 261,                     /* FOR  */
+    WHILE = 262,                   /* WHILE  */
+    DO = 263,                      /* DO  */
+    LPAREN = 264,                  /* LPAREN  */
+    RPAREN = 265,                  /* RPAREN  */
+    LBRACE = 266,                  /* LBRACE  */
+    RBRACE = 267,                  /* RBRACE  */
+    LBRACKET = 268,                /* LBRACKET  */
+    RBRACKET = 269,                /* RBRACKET  */
+    SEMICOLON = 270,               /* SEMICOLON  */
+    DOT = 271,                     /* DOT  */
+    COMMA = 272,                   /* COMMA  */
+    INCREMENT = 273,               /* INCREMENT  */
+    DECREMENT = 274,               /* DECREMENT  */
+    PLUS = 275,                    /* PLUS  */
+    MINUS = 276,                   /* MINUS  */
+    MULTIPLY = 277,                /* MULTIPLY  */
+    DIVIDE = 278,                  /* DIVIDE  */
+    MODULO = 279,                  /* MODULO  */
+    ASSIGN = 280,                  /* ASSIGN  */
+    PLUS_ASSIGN = 281,             /* PLUS_ASSIGN  */
+    MINUS_ASSIGN = 282,            /* MINUS_ASSIGN  */
+    MULTIPLY_ASSIGN = 283,         /* MULTIPLY_ASSIGN  */
+    DIVIDE_ASSIGN = 284,           /* DIVIDE_ASSIGN  */
+    GREATER = 285,                 /* GREATER  */
+    LESS = 286,                    /* LESS  */
+    GREATER_EQUAL = 287,           /* GREATER_EQUAL  */
+    LESS_EQUAL = 288,              /* LESS_EQUAL  */
+    EQUAL = 289,                   /* EQUAL  */
+    STRICT_EQUAL = 290,            /* STRICT_EQUAL  */
+    NOT_EQUAL = 291,               /* NOT_EQUAL  */
+    STRICT_NOT_EQUAL = 292,        /* STRICT_NOT_EQUAL  */
+    IDENTIFIER = 293,              /* IDENTIFIER  */
+    STRING_LITERAL = 294,          /* STRING_LITERAL  */
+    INT_NUMBER = 295,              /* INT_NUMBER  */
+    DOUBLE_NUMBER = 296            /* DOUBLE_NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -101,13 +101,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 15 "parser.y"
+#line 16 "parser.y"
 
-    double number;
-    char *str;
-    char *identifier;
+    int intValue;
+    double doubleValue;
+    char str[100];
+    char identifier[100];
 
-#line 111 "parser.tab.h"
+#line 112 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
