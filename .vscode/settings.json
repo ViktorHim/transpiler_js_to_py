@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.dbclient-js": "javascript",
+    "parser.tab.h": "c"
+  }
+}
