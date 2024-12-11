@@ -97,11 +97,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "parser.y"
+#line 26 "parser.y"
 
     int intValue;
     double doubleValue;
-    char str[5000];
+    char str[200];
     char operator[3];
     char identifier[100];
 

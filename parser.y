@@ -13,12 +13,11 @@ FILE *tokens_file;
 int indentation_level = 0;
 #define INDENTATION "    "
 
-void generate_indentation(char * buffer, int level)
+void print_indentation(int level)
 {
-    buffer[0] = '\0';
     for(int i = 0; i < level; i++)
     {
-        strcat(buffer,INDENTATION);
+        fprintf(yyout, INDENTATION);
     }
 }
 %}
@@ -27,7 +26,7 @@ void generate_indentation(char * buffer, int level)
 %union {
     int intValue;
     double doubleValue;
-    char str[5000];
+    char str[200];
     char operator[3];
     char identifier[100];
 }
@@ -67,84 +66,60 @@ void generate_indentation(char * buffer, int level)
 %token <intValue> INT_NUMBER
 %token <doubleValue> DOUBLE_NUMBER
 
-%type <str> statement statements code_block
+%type <str> statement statements
 %type <str> variable_declaration_statement separate_expression assignment_statement
-%type <str> branch_statement branch_condition
-%type <str> expression sign
+%type <str> branch_statement if_syntax
+%type <str> expression sign open_area close_area
 
 %start program
 
 %%
 program:
-    statements {
-        fprintf(yyout, "%s", $1);
-    }
+    statements
     ;
 
 statements:
-    statement {
-        sprintf($$, "%s", $1);
-    }
-    | statements statement {
-        sprintf($$, "%s%s", $1, $2);
-    }
+    statement
+    | statements statement
     ;
 
 statement:
-    variable_declaration_statement {  sprintf($$, "%s", $1);}
-    | assignment_statement { sprintf($$, "%s", $1);}
-    | branch_statement { sprintf($$, "%s", $1);}
-    | separate_expression { sprintf($$, "%s", $1);}
+    variable_declaration_statement 
+    | assignment_statement 
+    | branch_statement 
+    | separate_expression 
     ;
-
-code_block:
-    statement {
-        sprintf($$, "%s", $1);
-    }
-    | code_block statement {
-        if(indentation_level < 0) indentation_level = 0;
-        char indent[100];
-        generate_indentation(indent, indentation_level);
-        sprintf($$,"%s%s%s\n",$1,indent,$2);
-    }
-    ;
-
-
 
 variable_declaration_statement:
     VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression { 
-        sprintf($$, "%s = %s\n", $2, $4);
+        print_indentation(indentation_level);
+        fprintf(yyout, "%s = %s\n", $2, $4);
     }
     ;
 
 assignment_statement:
     IDENTIFIER ASSIGN expression {
-        sprintf($$, "%s = %s\n", $1, $3);
+        print_indentation(indentation_level);
+        fprintf(yyout, "%s = %s\n", $1, $3);
     }
     | IDENTIFIER COMPOUND_ASSIGN expression {
-        sprintf($$, "%s %s %s\n", $1, $2 ,$3);
+        print_indentation(indentation_level);
+        fprintf(yyout, "%s %s %s\n", $1, $2 ,$3);
     }
     ;
 
 branch_statement:
-    branch_condition LBRACE code_block RBRACE {
-        char indent[100];
-        generate_indentation(indent, indentation_level);
-        sprintf($$, "%s%s%s", $1, indent, $3);
-        indentation_level--;
-    }
-    | branch_condition statement {
-        char indent[100];
-        generate_indentation(indent, indentation_level);
-        sprintf($$, "%s%s%s", $1, indent, $2);
-        indentation_level--;
-    }
+    if_syntax
     ;
 
-branch_condition:
-    IF LPAREN expression RPAREN {
-        indentation_level++;
-        sprintf($$,"if (%s):\n", $3);
+if_syntax:
+    IF LPAREN expression RPAREN open_area {
+        print_indentation(indentation_level - 1);
+        fprintf(yyout, "if (%s):\n", $3);
+    }
+    | IF LPAREN expression RPAREN {
+        print_indentation(indentation_level);
+        fprintf(yyout, "if (%s):", $3);
     }
     ;
 
@@ -165,6 +140,8 @@ expression:
     | IDENTIFIER INCREMENT {sprintf($$, "%s += 1", $1);}
     | DECREMENT IDENTIFIER {sprintf($$, "%s -= 1", $2);}
     | IDENTIFIER DECREMENT {sprintf($$, "%s -= 1", $1);}
+    | open_area
+    | close_area
     ;
 
 sign:
@@ -176,6 +153,17 @@ sign:
     | GREATER_EQUAL {sprintf($$, ">=");}
     | LESS {sprintf($$, "<");}
     | LESS_EQUAL {sprintf($$, "<=");}
+    ;
+
+open_area:
+    LBRACE {
+        indentation_level++;
+    }
+    ;
+close_area:
+    RBRACE {
+        indentation_level--;
+    }
     ;
 %%
 
