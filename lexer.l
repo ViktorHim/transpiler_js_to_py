@@ -69,11 +69,6 @@ extern FILE *tokens_file;
                         return RBRACKET;
                     }
 
-";"                 {
-                        fprintf(tokens_file, "SEMICOLON\n");
-                        return SEMICOLON;
-                    }
-
 "."                 {
                         fprintf(tokens_file, "DOT\n");
                         return DOT;
@@ -123,24 +118,10 @@ extern FILE *tokens_file;
                         return ASSIGN;
                     }
 
-"+="                {
+"+="|"-="|"/="|"*=" {
                         fprintf(tokens_file, "PLUS_ASSIGN\n");
-                        return PLUS_ASSIGN;
-                    }
-
-"-="                {
-                        fprintf(tokens_file, "MINUS_ASSIGN\n");
-                        return MINUS_ASSIGN;
-                    }
-
-"*="                {
-                        fprintf(tokens_file, "MULTIPLY_ASSIGN\n");
-                        return MULTIPLY_ASSIGN;
-                    }
-
-"/="                {
-                        fprintf(tokens_file, "DIVIDE_ASSIGN\n");
-                        return DIVIDE_ASSIGN;
+                        strcpy(yylval.operator, yytext);
+                        return COMPOUND_ASSIGN;
                     }
 
 ">"                 {
@@ -207,7 +188,7 @@ extern FILE *tokens_file;
                         return STRING_LITERAL; 
                     }
 
-[\n\t\r ]+           {
+[;\n\t\r ]+           {
                         // Skip whitespace
                     }
 
