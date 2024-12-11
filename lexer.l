@@ -188,13 +188,19 @@ extern FILE *tokens_file;
                         return STRING_LITERAL; 
                     }
 
-[;\n\t\r ]+           {
-                        // Skip whitespace
+^\s*$               {
+                        fprintf(tokens_file, "EMPTY LINE\n");
+                        return EMPTY;
                     }
 
-.  {
-    fprintf(tokens_file, "Unknown character: %s\n", yytext);
-}
+[;\t\r\n ]+         {
+                        //skip
+                    }
+
+.                   {
+                        fprintf(tokens_file, "Unknown character: %s\n", yytext);
+                        exit(-1);
+                    }
 %%
 
 int yywrap(void) {

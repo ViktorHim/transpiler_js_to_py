@@ -60,35 +60,36 @@ extern int yydebug;
     FOR = 261,                     /* FOR  */
     WHILE = 262,                   /* WHILE  */
     DO = 263,                      /* DO  */
-    LPAREN = 264,                  /* LPAREN  */
-    RPAREN = 265,                  /* RPAREN  */
-    LBRACE = 266,                  /* LBRACE  */
-    RBRACE = 267,                  /* RBRACE  */
-    LBRACKET = 268,                /* LBRACKET  */
-    RBRACKET = 269,                /* RBRACKET  */
-    DOT = 270,                     /* DOT  */
-    COMMA = 271,                   /* COMMA  */
-    INCREMENT = 272,               /* INCREMENT  */
-    DECREMENT = 273,               /* DECREMENT  */
-    PLUS = 274,                    /* PLUS  */
-    MINUS = 275,                   /* MINUS  */
-    MULTIPLY = 276,                /* MULTIPLY  */
-    DIVIDE = 277,                  /* DIVIDE  */
-    MODULO = 278,                  /* MODULO  */
-    ASSIGN = 279,                  /* ASSIGN  */
-    COMPOUND_ASSIGN = 280,         /* COMPOUND_ASSIGN  */
-    GREATER = 281,                 /* GREATER  */
-    LESS = 282,                    /* LESS  */
-    GREATER_EQUAL = 283,           /* GREATER_EQUAL  */
-    LESS_EQUAL = 284,              /* LESS_EQUAL  */
-    EQUAL = 285,                   /* EQUAL  */
-    STRICT_EQUAL = 286,            /* STRICT_EQUAL  */
-    NOT_EQUAL = 287,               /* NOT_EQUAL  */
-    STRICT_NOT_EQUAL = 288,        /* STRICT_NOT_EQUAL  */
-    IDENTIFIER = 289,              /* IDENTIFIER  */
-    STRING_LITERAL = 290,          /* STRING_LITERAL  */
-    INT_NUMBER = 291,              /* INT_NUMBER  */
-    DOUBLE_NUMBER = 292            /* DOUBLE_NUMBER  */
+    EMPTY = 264,                   /* EMPTY  */
+    LPAREN = 265,                  /* LPAREN  */
+    RPAREN = 266,                  /* RPAREN  */
+    LBRACE = 267,                  /* LBRACE  */
+    RBRACE = 268,                  /* RBRACE  */
+    LBRACKET = 269,                /* LBRACKET  */
+    RBRACKET = 270,                /* RBRACKET  */
+    DOT = 271,                     /* DOT  */
+    COMMA = 272,                   /* COMMA  */
+    INCREMENT = 273,               /* INCREMENT  */
+    DECREMENT = 274,               /* DECREMENT  */
+    PLUS = 275,                    /* PLUS  */
+    MINUS = 276,                   /* MINUS  */
+    MULTIPLY = 277,                /* MULTIPLY  */
+    DIVIDE = 278,                  /* DIVIDE  */
+    MODULO = 279,                  /* MODULO  */
+    ASSIGN = 280,                  /* ASSIGN  */
+    COMPOUND_ASSIGN = 281,         /* COMPOUND_ASSIGN  */
+    GREATER = 282,                 /* GREATER  */
+    LESS = 283,                    /* LESS  */
+    GREATER_EQUAL = 284,           /* GREATER_EQUAL  */
+    LESS_EQUAL = 285,              /* LESS_EQUAL  */
+    EQUAL = 286,                   /* EQUAL  */
+    STRICT_EQUAL = 287,            /* STRICT_EQUAL  */
+    NOT_EQUAL = 288,               /* NOT_EQUAL  */
+    STRICT_NOT_EQUAL = 289,        /* STRICT_NOT_EQUAL  */
+    IDENTIFIER = 290,              /* IDENTIFIER  */
+    STRING_LITERAL = 291,          /* STRING_LITERAL  */
+    INT_NUMBER = 292,              /* INT_NUMBER  */
+    DOUBLE_NUMBER = 293            /* DOUBLE_NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -105,7 +106,7 @@ union YYSTYPE
     char operator[3];
     char identifier[100];
 
-#line 109 "parser.tab.h"
+#line 110 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

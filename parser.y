@@ -35,6 +35,8 @@ void print_indentation(int level)
 
 %token IF ELSE FOR WHILE DO
 
+%token EMPTY
+
 %token LPAREN
 %token RPAREN
 %token LBRACE
@@ -66,9 +68,9 @@ void print_indentation(int level)
 %token <intValue> INT_NUMBER
 %token <doubleValue> DOUBLE_NUMBER
 
-%type <str> statement statements
 %type <str> variable_declaration_statement separate_expression assignment_statement
-%type <str> branch_statement if_syntax
+%type <str> branch_statement if_syntax else_syntax else_if_syntax
+%type <str> cycle_statement
 %type <str> expression sign open_area close_area
 
 %start program
@@ -84,9 +86,11 @@ statements:
     ;
 
 statement:
-    variable_declaration_statement 
-    | assignment_statement 
-    | branch_statement 
+    EMPTY { fprintf(yyout, "\n");}
+    | variable_declaration_statement 
+    | assignment_statement
+    | branch_statement
+    | cycle_statement
     | separate_expression 
     ;
 
@@ -110,6 +114,8 @@ assignment_statement:
 
 branch_statement:
     if_syntax
+    | else_syntax
+    | else_if_syntax
     ;
 
 if_syntax:
@@ -123,9 +129,46 @@ if_syntax:
     }
     ;
 
+else_syntax:
+    ELSE open_area {
+        print_indentation(indentation_level - 1);
+        fprintf(yyout, "else:\n");
+    }
+    | ELSE {
+        print_indentation(indentation_level);
+        fprintf(yyout, "else:");
+    }
+    ;
+
+else_if_syntax:
+    ELSE IF LPAREN expression RPAREN open_area {
+        print_indentation(indentation_level - 1);
+        fprintf(yyout, "elif (%s):\n", $4);
+    }
+    | ELSE IF LPAREN expression RPAREN {
+        print_indentation(indentation_level);
+        fprintf(yyout, "elif (%s):", $4);
+    }
+    ;
+
+cycle_statement:
+    WHILE LPAREN expression RPAREN open_area {
+        print_indentation(indentation_level - 1);
+        fprintf(yyout, "while (%s):\n", $3);
+    }
+    | WHILE LPAREN expression RPAREN {
+        print_indentation(indentation_level);
+        fprintf(yyout, "while (%s):", $3);
+    }
+    ;
+
 separate_expression:
     expression {
-        sprintf($$, "%s\n", $1);
+        if(strlen($$) != 0)
+        {
+            print_indentation(indentation_level);
+            fprintf(yyout, "%s\n", $1);
+        }
     }
     ;
 
@@ -153,16 +196,22 @@ sign:
     | GREATER_EQUAL {sprintf($$, ">=");}
     | LESS {sprintf($$, "<");}
     | LESS_EQUAL {sprintf($$, "<=");}
+    | EQUAL {sprintf($$, "==");}
+    | STRICT_EQUAL {sprintf($$, "==");}
+    | NOT_EQUAL {sprintf($$, "!=");}
+    | STRICT_NOT_EQUAL {sprintf($$, "!=");}
     ;
 
 open_area:
     LBRACE {
         indentation_level++;
+        sprintf($$, "");
     }
     ;
 close_area:
     RBRACE {
         indentation_level--;
+        sprintf($$, "");
     }
     ;
 %%

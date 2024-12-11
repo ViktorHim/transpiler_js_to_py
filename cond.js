@@ -1,22 +1,14 @@
 let a = 5;
-let b = 3;
+let b = 0;
+let c = 3.5;
 
-if (a > 5) b = a + 3;
-
-if (a > b) {
-  if (a > b) {
-    if (a > b) {
-      if (a > b) {
-        a = b * 3;
-        a = b * 3;
-        a = b * 3;
-        a = b * 3;
-        a = b * 3;
-        a = b * 3;
-        a = b * 3;
-      }
-    }
-  }
+while (a > 0) {
+  a--;
+  b++;
 }
 
-b = 0;
+if (a > b) {
+  c = c + 10 * 2;
+} else {
+  c = c - 10 / 2;
+}
