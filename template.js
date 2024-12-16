@@ -9,6 +9,8 @@ while (a > 0) {
 
 if (a > b) {
   c = c + 10 * 2;
+} else if (a < b) {
+  c = c - 10 / 5;
 } else {
   c = c - 10 / 2;
 }

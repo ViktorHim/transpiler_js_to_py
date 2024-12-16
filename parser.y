@@ -37,6 +37,7 @@ void print_indentation(int level)
 %union {
     int intValue;
     double doubleValue;
+    int bool;
     char str[200];
     Expr expr;
     char identifier[100];
@@ -78,14 +79,14 @@ void print_indentation(int level)
 %token <identifier> IDENTIFIER
 %token <str> STRING_LITERAL
 %token <str> COMPOUND_ASSIGN
-%token <str> BOOLEAN
+%token <bool> BOOLEAN
 %token <intValue> INT_NUMBER
 %token <doubleValue> DOUBLE_NUMBER
 
 %type <str> statement statement_optional_semicolon separate_expression as_print vds_print expression_print
 %type <str> branch_statement if_syntax else_syntax else_if_syntax
 %type <str> cycle_statement while_syntax for_syntax
-%type <str>  sign  logic_sign compare_sign open_area close_area
+%type <str>  sign compare_sign open_area close_area
 %type <expr> variable_declaration_statement assignment_statement expression
 
 %start program
@@ -101,7 +102,6 @@ statements:
     ;
 
 statement:
-    EMPTY { fprintf(yyout, "\n");}
     | vds_print
     | as_print
     | branch_statement
@@ -234,13 +234,24 @@ expression:
     | STRING_LITERAL {sprintf($$.full, "%s", $1);}
     | INT_NUMBER {sprintf($$.full, "%d", $1);}
     | DOUBLE_NUMBER {sprintf($$.full, "%lf", $1);}
-    | BOOLEAN {sprintf($$.full, "%s", $1);}
+    | BOOLEAN {
+        if($1)
+        {
+            sprintf($$.full, "True");
+        }
+        else
+        {
+            sprintf($$.full, "False");
+        }
+    }
     | expression sign expression {sprintf($$.full, "%s %s %s", $1.full, $2, $3.full);}
     | expression compare_sign expression {
         sprintf($$.full, "%s %s %s", $1.full, $2, $3.full);
         sprintf($$.value, "%s", $3.full);
     }
-    | expression logic_sign expression {sprintf($$.full, "%s %s %s", $1.full, $2, $3.full);}
+    | expression AND expression {sprintf($$.full, "%s and %s", $1.full, $3.full);}
+    | expression OR expression {sprintf($$.full, "%s or %s", $1.full, $3.full);}
+    | NOT expression {sprintf($$.full, "not %s", $2.full);}
     | LPAREN expression RPAREN {sprintf($$.full, "(%s)", $2.full);}
     ;
 
@@ -251,11 +262,6 @@ sign:
     | DIVIDE {sprintf($$, "/");}
     ;
 
-logic_sign:
-    OR {sprintf($$, "or");}
-    | AND {sprintf($$, "and");}
-    | NOT {sprintf($$, "not");}
-    ;
 compare_sign:
     GREATER {sprintf($$, ">");}
     | GREATER_EQUAL {sprintf($$, ">=");}

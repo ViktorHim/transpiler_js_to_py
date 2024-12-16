@@ -118,11 +118,12 @@ union YYSTYPE
 
     int intValue;
     double doubleValue;
+    int bool;
     char str[200];
     Expr expr;
     char identifier[100];
 
-#line 126 "parser.tab.h"
+#line 127 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -9,9 +9,15 @@ extern FILE *tokens_file;
 %}
 
 %%
-"true"|"false"      {
+"true"              {
                         fprintf(tokens_file, "%s\n", yytext);
-                        strcpy(yylval.str, yytext);
+                        yylval.bool = 1;
+                        return BOOLEAN;
+                    }
+
+"false"             {
+                        fprintf(tokens_file, "%s\n", yytext);
+                        yylval.bool = 0;
                         return BOOLEAN;
                     }
 
