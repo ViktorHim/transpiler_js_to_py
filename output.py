@@ -8,3 +8,7 @@ if (a > b):
     c = c + 10 * 2
 else:
     c = c - 10 / 2
+for i in range(0,3,2):
+    a = b + c
+    c = a + b
+    b = a + c

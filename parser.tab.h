@@ -44,6 +44,17 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 27 "parser.y"
+
+    typedef struct  
+    {
+        char full [100];
+        char id [100];
+        char value [100];
+    } Expr;
+
+#line 58 "parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -69,27 +80,32 @@ extern int yydebug;
     RBRACKET = 270,                /* RBRACKET  */
     DOT = 271,                     /* DOT  */
     COMMA = 272,                   /* COMMA  */
-    INCREMENT = 273,               /* INCREMENT  */
-    DECREMENT = 274,               /* DECREMENT  */
-    PLUS = 275,                    /* PLUS  */
-    MINUS = 276,                   /* MINUS  */
-    MULTIPLY = 277,                /* MULTIPLY  */
-    DIVIDE = 278,                  /* DIVIDE  */
-    MODULO = 279,                  /* MODULO  */
-    ASSIGN = 280,                  /* ASSIGN  */
-    COMPOUND_ASSIGN = 281,         /* COMPOUND_ASSIGN  */
-    GREATER = 282,                 /* GREATER  */
-    LESS = 283,                    /* LESS  */
-    GREATER_EQUAL = 284,           /* GREATER_EQUAL  */
-    LESS_EQUAL = 285,              /* LESS_EQUAL  */
-    EQUAL = 286,                   /* EQUAL  */
-    STRICT_EQUAL = 287,            /* STRICT_EQUAL  */
-    NOT_EQUAL = 288,               /* NOT_EQUAL  */
-    STRICT_NOT_EQUAL = 289,        /* STRICT_NOT_EQUAL  */
-    IDENTIFIER = 290,              /* IDENTIFIER  */
-    STRING_LITERAL = 291,          /* STRING_LITERAL  */
-    INT_NUMBER = 292,              /* INT_NUMBER  */
-    DOUBLE_NUMBER = 293            /* DOUBLE_NUMBER  */
+    SEMICOLON = 273,               /* SEMICOLON  */
+    INCREMENT = 274,               /* INCREMENT  */
+    DECREMENT = 275,               /* DECREMENT  */
+    PLUS = 276,                    /* PLUS  */
+    MINUS = 277,                   /* MINUS  */
+    MULTIPLY = 278,                /* MULTIPLY  */
+    DIVIDE = 279,                  /* DIVIDE  */
+    MODULO = 280,                  /* MODULO  */
+    OR = 281,                      /* OR  */
+    AND = 282,                     /* AND  */
+    NOT = 283,                     /* NOT  */
+    ASSIGN = 284,                  /* ASSIGN  */
+    GREATER = 285,                 /* GREATER  */
+    LESS = 286,                    /* LESS  */
+    GREATER_EQUAL = 287,           /* GREATER_EQUAL  */
+    LESS_EQUAL = 288,              /* LESS_EQUAL  */
+    EQUAL = 289,                   /* EQUAL  */
+    STRICT_EQUAL = 290,            /* STRICT_EQUAL  */
+    NOT_EQUAL = 291,               /* NOT_EQUAL  */
+    STRICT_NOT_EQUAL = 292,        /* STRICT_NOT_EQUAL  */
+    IDENTIFIER = 293,              /* IDENTIFIER  */
+    STRING_LITERAL = 294,          /* STRING_LITERAL  */
+    COMPOUND_ASSIGN = 295,         /* COMPOUND_ASSIGN  */
+    BOOLEAN = 296,                 /* BOOLEAN  */
+    INT_NUMBER = 297,              /* INT_NUMBER  */
+    DOUBLE_NUMBER = 298            /* DOUBLE_NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -98,15 +114,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 26 "parser.y"
+#line 37 "parser.y"
 
     int intValue;
     double doubleValue;
     char str[200];
-    char operator[3];
+    Expr expr;
     char identifier[100];
 
-#line 110 "parser.tab.h"
+#line 126 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

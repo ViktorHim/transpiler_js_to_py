@@ -8,7 +8,13 @@ extern FILE *tokens_file;
 
 %}
 
-%%  
+%%
+"true"|"false"      {
+                        fprintf(tokens_file, "%s\n", yytext);
+                        strcpy(yylval.str, yytext);
+                        return BOOLEAN;
+                    }
+
 "let"|"var"|"const" {
                         fprintf(tokens_file, "%s\n", yytext);
                         return VARIABLE_DECLARATION_KEYWORD;
@@ -120,7 +126,7 @@ extern FILE *tokens_file;
 
 "+="|"-="|"/="|"*=" {
                         fprintf(tokens_file, "PLUS_ASSIGN\n");
-                        strcpy(yylval.operator, yytext);
+                        strcpy(yylval.str, yytext);
                         return COMPOUND_ASSIGN;
                     }
 
@@ -164,6 +170,26 @@ extern FILE *tokens_file;
                         return STRICT_NOT_EQUAL;
                     }
 
+";"                 {
+                        fprintf(tokens_file, "SEMICOLON\n");
+                        return SEMICOLON;
+                    }
+
+"!"                 {
+                        fprintf(tokens_file, "NOT\n");
+                        return NOT;
+                    }
+
+"||"                 {
+                        fprintf(tokens_file, "OR\n");
+                        return OR;
+                    }
+
+"&&"                {
+                        fprintf(tokens_file, "AND\n");
+                        return AND;
+                    }
+
 [0-9]+              {
                         fprintf(tokens_file, "INT NUMBER: %s\n", yytext);
                         yylval.intValue = atoi(yytext);
@@ -193,7 +219,7 @@ extern FILE *tokens_file;
                         return EMPTY;
                     }
 
-[;\t\r\n ]+         {
+[\t\r\n ]+          {
                         //skip
                     }
 

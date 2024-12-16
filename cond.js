@@ -12,3 +12,9 @@ if (a > b) {
 } else {
   c = c - 10 / 2;
 }
+
+for (let i = 0; i < 3; i++) {
+  a = b + c;
+  c = a + b;
+  b = a + c;
+}

@@ -10,8 +10,9 @@ extern FILE *yyin;
 extern FILE *yyout;
 FILE *tokens_file;
 
-int indentation_level = 0;
 #define INDENTATION "    "
+
+int indentation_level = 0;
 
 void print_indentation(int level)
 {
@@ -20,14 +21,24 @@ void print_indentation(int level)
         fprintf(yyout, INDENTATION);
     }
 }
+
 %}
+
+%code requires {
+    typedef struct  
+    {
+        char full [100];
+        char id [100];
+        char value [100];
+    } Expr;
+}
 
 
 %union {
     int intValue;
     double doubleValue;
     char str[200];
-    char operator[3];
+    Expr expr;
     char identifier[100];
 }
 
@@ -44,15 +55,16 @@ void print_indentation(int level)
 %token LBRACKET
 %token RBRACKET
 
-%token DOT COMMA
+%token DOT COMMA SEMICOLON
 
-%token INCREMENT
-%token DECREMENT
+%token INCREMENT DECREMENT
 
 %token PLUS MINUS MULTIPLY DIVIDE MODULO
 
+
+%token OR AND NOT
+
 %token ASSIGN
-%token <operator> COMPOUND_ASSIGN
 
 %token GREATER
 %token LESS
@@ -65,13 +77,16 @@ void print_indentation(int level)
 
 %token <identifier> IDENTIFIER
 %token <str> STRING_LITERAL
+%token <str> COMPOUND_ASSIGN
+%token <str> BOOLEAN
 %token <intValue> INT_NUMBER
 %token <doubleValue> DOUBLE_NUMBER
 
-%type <str> variable_declaration_statement separate_expression assignment_statement
+%type <str> statement statement_optional_semicolon separate_expression as_print vds_print expression_print
 %type <str> branch_statement if_syntax else_syntax else_if_syntax
-%type <str> cycle_statement
-%type <str> expression sign open_area close_area
+%type <str> cycle_statement while_syntax for_syntax
+%type <str>  sign  logic_sign compare_sign open_area close_area
+%type <expr> variable_declaration_statement assignment_statement expression
 
 %start program
 
@@ -81,36 +96,73 @@ program:
     ;
 
 statements:
-    statement
-    | statements statement
+    statement_optional_semicolon 
+    | statements statement_optional_semicolon
     ;
 
 statement:
     EMPTY { fprintf(yyout, "\n");}
-    | variable_declaration_statement 
-    | assignment_statement
+    | vds_print
+    | as_print
     | branch_statement
     | cycle_statement
-    | separate_expression 
+    | expression_print
+    | open_area
+    | close_area
+    ;
+
+statement_optional_semicolon:
+    statement SEMICOLON
+    | statement
     ;
 
 variable_declaration_statement:
-    VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression { 
-        print_indentation(indentation_level);
-        fprintf(yyout, "%s = %s\n", $2, $4);
+    | VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression { 
+        sprintf($$.full, "%s = %s", $2, $4.full);
+        sprintf($$.id, "%s", $2);
+        sprintf($$.value, "%s", $4.full);
     }
     ;
 
 assignment_statement:
     IDENTIFIER ASSIGN expression {
-        print_indentation(indentation_level);
-        fprintf(yyout, "%s = %s\n", $1, $3);
+        sprintf($$.full, "%s = %s", $1, $3.full);
+        sprintf($$.id, "%s", $1);
+        sprintf($$.value, "%s", $3.full);
     }
     | IDENTIFIER COMPOUND_ASSIGN expression {
-        print_indentation(indentation_level);
-        fprintf(yyout, "%s %s %s\n", $1, $2 ,$3);
+        sprintf($$.full, "%s %s %s", $1, $2 ,$3.full);
+        sprintf($$.id, "%s", $1);
+        sprintf($$.value, "%s", $3.full);
+    }
+    | INCREMENT IDENTIFIER {
+        sprintf($$.full, "%s += 1", $2);
+        sprintf($$.id, "%s", $2);
+        sprintf($$.value, "1");
+    }
+    | IDENTIFIER INCREMENT {
+        sprintf($$.full, "%s += 1", $1);
+        sprintf($$.id, "%s", $1);
+        sprintf($$.value, "1");
+    }
+    | DECREMENT IDENTIFIER {
+        sprintf($$.full, "%s -= 1", $2);
+        sprintf($$.id, "%s", $2);
+        sprintf($$.value, "-1");
+    }
+    | IDENTIFIER DECREMENT {
+        sprintf($$.full, "%s -= 1", $1);
+        sprintf($$.id, "%s", $1);
+        sprintf($$.value, "-1");
     }
     ;
+
+vds_print:
+    variable_declaration_statement {print_indentation(indentation_level); fprintf(yyout, "%s\n", $1.full);}
+as_print:
+    assignment_statement {print_indentation(indentation_level); fprintf(yyout, "%s\n", $1.full);}
+expression_print:
+    expression {print_indentation(indentation_level); fprintf(yyout, "%s\n", $1.full);}
 
 branch_statement:
     if_syntax
@@ -120,18 +172,18 @@ branch_statement:
 
 if_syntax:
     IF LPAREN expression RPAREN open_area {
-        print_indentation(indentation_level - 1);
-        fprintf(yyout, "if (%s):\n", $3);
+        print_indentation(indentation_level-1);
+        fprintf(yyout, "if (%s):\n", $3.full);
     }
     | IF LPAREN expression RPAREN {
         print_indentation(indentation_level);
-        fprintf(yyout, "if (%s):", $3);
+        sprintf($$, "if (%s):", $3.full);
     }
     ;
 
 else_syntax:
     ELSE open_area {
-        print_indentation(indentation_level - 1);
+        print_indentation(indentation_level-1);
         fprintf(yyout, "else:\n");
     }
     | ELSE {
@@ -142,49 +194,54 @@ else_syntax:
 
 else_if_syntax:
     ELSE IF LPAREN expression RPAREN open_area {
-        print_indentation(indentation_level - 1);
-        fprintf(yyout, "elif (%s):\n", $4);
+        print_indentation(indentation_level-1);
+        fprintf(yyout, "elif (%s):\n", $4.full);
     }
     | ELSE IF LPAREN expression RPAREN {
         print_indentation(indentation_level);
-        fprintf(yyout, "elif (%s):", $4);
+        fprintf(yyout, "elif (%s):", $4.full);
     }
     ;
 
 cycle_statement:
+    while_syntax
+    | for_syntax
+    ;
+
+while_syntax:
     WHILE LPAREN expression RPAREN open_area {
-        print_indentation(indentation_level - 1);
-        fprintf(yyout, "while (%s):\n", $3);
+        print_indentation(indentation_level-1);
+        fprintf(yyout, "while (%s):\n", $3.full);
     }
     | WHILE LPAREN expression RPAREN {
         print_indentation(indentation_level);
-        fprintf(yyout, "while (%s):", $3);
+        fprintf(yyout, "while (%s):", $3.full);
     }
     ;
 
-separate_expression:
-    expression {
-        if(strlen($$) != 0)
-        {
-            print_indentation(indentation_level);
-            fprintf(yyout, "%s\n", $1);
-        }
+for_syntax:
+    FOR LPAREN variable_declaration_statement SEMICOLON expression SEMICOLON assignment_statement RPAREN open_area {
+        print_indentation(indentation_level-1);
+        fprintf(yyout, "for %s in range(%s,%s,%s):\n", $3.id, $3.value, $5.value, $7.value);
     }
-    ;
+    | FOR LPAREN variable_declaration_statement SEMICOLON expression SEMICOLON assignment_statement RPAREN {
+        print_indentation(indentation_level);
+        fprintf(yyout, "for %s in range(%s,%s,%s): ", $3.id, $3.value, $5.value, $7.value);
+    }
 
 expression:
-    IDENTIFIER { sprintf($$, "%s", $1);}
-    | STRING_LITERAL { sprintf($$, "%s", $1); }
-    | INT_NUMBER { sprintf($$, "%d", $1); }
-    | DOUBLE_NUMBER { sprintf($$, "%lf", $1); }
-    | expression sign expression { sprintf($$, "%s %s %s", $1, $2, $3);}
-    | LPAREN expression RPAREN {sprintf($$, "(%s)", $2);}
-    | INCREMENT IDENTIFIER {sprintf($$, "%s += 1", $2);}
-    | IDENTIFIER INCREMENT {sprintf($$, "%s += 1", $1);}
-    | DECREMENT IDENTIFIER {sprintf($$, "%s -= 1", $2);}
-    | IDENTIFIER DECREMENT {sprintf($$, "%s -= 1", $1);}
-    | open_area
-    | close_area
+    IDENTIFIER {sprintf($$.full, "%s", $1);}
+    | STRING_LITERAL {sprintf($$.full, "%s", $1);}
+    | INT_NUMBER {sprintf($$.full, "%d", $1);}
+    | DOUBLE_NUMBER {sprintf($$.full, "%lf", $1);}
+    | BOOLEAN {sprintf($$.full, "%s", $1);}
+    | expression sign expression {sprintf($$.full, "%s %s %s", $1.full, $2, $3.full);}
+    | expression compare_sign expression {
+        sprintf($$.full, "%s %s %s", $1.full, $2, $3.full);
+        sprintf($$.value, "%s", $3.full);
+    }
+    | expression logic_sign expression {sprintf($$.full, "%s %s %s", $1.full, $2, $3.full);}
+    | LPAREN expression RPAREN {sprintf($$.full, "(%s)", $2.full);}
     ;
 
 sign:
@@ -192,7 +249,15 @@ sign:
     | MINUS {sprintf($$, "-");}
     | MULTIPLY {sprintf($$, "*");}
     | DIVIDE {sprintf($$, "/");}
-    | GREATER {sprintf($$, ">");}
+    ;
+
+logic_sign:
+    OR {sprintf($$, "or");}
+    | AND {sprintf($$, "and");}
+    | NOT {sprintf($$, "not");}
+    ;
+compare_sign:
+    GREATER {sprintf($$, ">");}
     | GREATER_EQUAL {sprintf($$, ">=");}
     | LESS {sprintf($$, "<");}
     | LESS_EQUAL {sprintf($$, "<=");}
