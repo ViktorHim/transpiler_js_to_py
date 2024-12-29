@@ -51,6 +51,16 @@ extern FILE *tokens_file;
                         return DO;
                     }
 
+"console"           {
+                        fprintf(tokens_file, "CONSOLE\n");
+                        return CONSOLE;
+                    }
+
+"log"           {
+                        fprintf(tokens_file, "LOG\n");
+                        return LOG;
+                    }
+
 "("                 {
                         fprintf(tokens_file, "LPAREN\n");
                         return LPAREN;

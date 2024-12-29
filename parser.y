@@ -43,18 +43,15 @@ void print_indentation(int level)
     char identifier[100];
 }
 
+%token CONSOLE LOG
+
 %token VARIABLE_DECLARATION_KEYWORD
 
 %token IF ELSE FOR WHILE DO
 
 %token EMPTY
 
-%token LPAREN
-%token RPAREN
-%token LBRACE
-%token RBRACE
-%token LBRACKET
-%token RBRACKET
+%token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
 %token DOT COMMA SEMICOLON
 
@@ -62,19 +59,11 @@ void print_indentation(int level)
 
 %token PLUS MINUS MULTIPLY DIVIDE MODULO
 
-
 %token OR AND NOT
 
 %token ASSIGN
 
-%token GREATER
-%token LESS
-%token GREATER_EQUAL
-%token LESS_EQUAL
-%token EQUAL
-%token STRICT_EQUAL
-%token NOT_EQUAL
-%token STRICT_NOT_EQUAL
+%token GREATER LESS GREATER_EQUAL LESS_EQUAL EQUAL STRICT_EQUAL NOT_EQUAL STRICT_NOT_EQUAL
 
 %token <identifier> IDENTIFIER
 %token <str> STRING_LITERAL
@@ -83,7 +72,7 @@ void print_indentation(int level)
 %token <intValue> INT_NUMBER
 %token <doubleValue> DOUBLE_NUMBER
 
-%type <str> statement statement_optional_semicolon separate_expression as_print vds_print expression_print
+%type <str> statement statement_optional_semicolon as_print vds_print expression_print log args
 %type <str> branch_statement if_syntax else_syntax else_if_syntax
 %type <str> cycle_statement while_syntax for_syntax
 %type <str>  sign compare_sign open_area close_area
@@ -102,11 +91,12 @@ statements:
     ;
 
 statement:
-    | vds_print
+    vds_print
     | as_print
     | branch_statement
     | cycle_statement
     | expression_print
+    | log
     | open_area
     | close_area
     ;
@@ -117,7 +107,7 @@ statement_optional_semicolon:
     ;
 
 variable_declaration_statement:
-    | VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression { 
+    VARIABLE_DECLARATION_KEYWORD IDENTIFIER ASSIGN expression { 
         sprintf($$.full, "%s = %s", $2, $4.full);
         sprintf($$.id, "%s", $2);
         sprintf($$.value, "%s", $4.full);
@@ -252,6 +242,7 @@ expression:
     | expression AND expression {sprintf($$.full, "%s and %s", $1.full, $3.full);}
     | expression OR expression {sprintf($$.full, "%s or %s", $1.full, $3.full);}
     | NOT expression {sprintf($$.full, "not %s", $2.full);}
+    | MINUS expression {sprintf($$.full, "-%s", $2.full);}
     | LPAREN expression RPAREN {sprintf($$.full, "(%s)", $2.full);}
     ;
 
@@ -284,6 +275,15 @@ close_area:
         indentation_level--;
         sprintf($$, "");
     }
+    ;
+
+log:
+    CONSOLE DOT LOG LPAREN args RPAREN {fprintf(yyout, "print(%s)\n", $5);}
+    ;
+
+args:
+    expression {sprintf($$, "%s", $1.full);}
+    | args COMMA expression {sprintf($$, "%s,%s", $1, $3.full);}
     ;
 %%
 
